@@ -2,8 +2,8 @@ version: 2
 jobs:
   build:
     working_directory: /app
-    # docker:
-    #   - image: matheves/jacky:latest
+    docker:
+      - image: matheves/jacky:latest
     steps:
       - checkout
       - setup_remote_docker
