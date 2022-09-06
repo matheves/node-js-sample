@@ -36,7 +36,7 @@ jobs:
       - run:
           name: Curl route 8080
           command: |
-            docker run --network container:jacky_cont appropriate/curl --retry 10 --retry-connrefused http://jacky_cont:8080
+            docker run --network container:jacky_cont appropriate/curl --retry 10 --retry-connrefused http://localhost:8080
       - run:
           name: Curl validation
           command: |
