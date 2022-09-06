@@ -2,6 +2,9 @@ jobs:
   test:
     docker:
       - image: cimg/node:latest
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_PASS
     steps:
       - checkout
       - run: npm install
