@@ -1,5 +1,13 @@
 version: 2
 jobs:
+  test:
+    docker:
+      - image: circleci/node:12.16
+    steps:
+      - checkout
+      - run: echo "Running tests"
+      - run: npm install
+      - run: npm run test  
   build:
     working_directory: /app
     docker:
@@ -17,30 +25,23 @@ jobs:
           command: |
             set +o pipefail
             docker load -i /caches/app.tar | true
-      - run:
-          name: Build test container
-          #docker build -t node_sample_test --target test --build-arg JEST_JUNIT_OUTPUT_DIR=$JEST_JUNIT_OUTPUT_DIR . 
-          command: |
-            docker build --cache-from=app -t node_sample_test --target test --build-arg JEST_JUNIT_OUTPUT_DIR=/reports/ .
-      - run:
-          name: Save Docker image layer cache
-          command: |
-            mkdir -p /caches
-            docker save -o /caches/app.tar node_sample_test
-      - save_cache:
-          key: v1-{{ .Branch }}-{{ epoch }}
-          paths:
-            - /caches/app.tar
-      - run:
-          name: Run test container
-          command: |
-            docker run -it --name cont_test node_sample_test
-      - run:
-          name: Recover test files
-          #docker cp cont_test:/usr/src/app/$JEST_JUNIT_OUTPUT_DIR $JEST_JUNIT_OUTPUT_DIR
-          command: |
-            docker cp cont_test:/usr/src/app/reports/ ./reports/
-            docker rm node_sample_test
+      # - run:
+      #     name: Build test container
+      #     #docker build -t node_sample_test --target test --build-arg JEST_JUNIT_OUTPUT_DIR=$JEST_JUNIT_OUTPUT_DIR . 
+      #     command: |
+      #       docker build --cache-from=app -t node_sample_test --target test --build-arg JEST_JUNIT_OUTPUT_DIR=/reports/ .
+
+
+      # - run:
+      #     name: Run test container
+      #     command: |
+      #       docker run -it --name cont_test node_sample_test
+      # - run:
+      #     name: Recover test files
+      #     #docker cp cont_test:/usr/src/app/$JEST_JUNIT_OUTPUT_DIR $JEST_JUNIT_OUTPUT_DIR
+      #     command: |
+      #       docker cp cont_test:/usr/src/app/reports/ ./reports/
+      #       docker rm node_sample_test
       - store_test_results:
           #path: $JEST_JUNIT_OUTPUT_DIR
           path: ./reports/
@@ -48,6 +49,16 @@ jobs:
           name: Build prod application Docker image
           command: |
             docker build --cache-from=app --cache-from=app -t matheves/node_sample --target prod .
+      - run:
+          name: Save Docker image layer cache
+          command: |
+            mkdir -p /caches
+            docker save -o /caches/app.tar matheves/node_sample
+      - save_cache:
+          key: v1-{{ .Branch }}-{{ epoch }}
+          paths:
+            - /caches/app.tar
+
       - run:
           name: Run docker image on port 8080
           command : |
@@ -61,3 +72,12 @@ jobs:
           command: |
             echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
             docker push matheves/node_sample:latest
+
+workflows:
+  version: 2
+  test_build:
+    jobs:
+      - test
+      - build:
+        requires: 
+          - test
