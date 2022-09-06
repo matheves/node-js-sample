@@ -1,7 +1,7 @@
 jobs:
   test:
     docker:
-      - image: cimg/node:latest
+      - image: cimg/node:16.10
         auth:
           username: $DOCKER_USER
           password: $DOCKER_PASS
