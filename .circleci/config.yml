@@ -4,9 +4,17 @@ jobs:
       - image: cimg/node:latest
     steps:
       - checkout
-      - run: echo "Running tests"
       - run: npm install
-      - run: npm run test  
+      - run:
+          name: Install JUnit coverage reporter
+          command: yarn add --dev jest-junit
+      - run:
+          name: Run tests with JUnit as reporter
+          command: jest --ci --runInBand --reporters=default --reporters=jest-junit
+          environment:
+            JEST_JUNIT_OUTPUT_DIR: ./reports/
+      - store_test_results:
+          path: ./reports/ 
   build:
     working_directory: /app
     docker:
@@ -42,7 +50,6 @@ jobs:
       #       docker cp cont_test:/usr/src/app/reports/ ./reports/
       #       docker rm node_sample_test
       - store_test_results:
-          #path: $JEST_JUNIT_OUTPUT_DIR
           path: ./reports/
       - run:
           name: Build prod application Docker image
