@@ -41,7 +41,7 @@ jobs:
       - run:
           name: Curl route 8081
           command: |
-            curl http://localhost:8081
+            curl http://localhost:8080
       - run:
           name: Curl validation
           command: |
