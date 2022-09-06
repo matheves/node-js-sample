@@ -1,4 +1,4 @@
-FROM node:16
+FROM node:16 as base
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -8,12 +8,16 @@ WORKDIR /usr/src/app
 # where available (npm@5+)
 COPY package*.json ./
 
+ARG JEST_JUNIT_OUTPUT_DIR=./reports/
+
+# Bundle test app source
+FROM base as test
 RUN npm install
-# If you are building your code for production
-# RUN npm ci --only=production
-
-# Bundle app source
 COPY . .
+CMD ["npm", "run", "test"]
 
-EXPOSE 8080
+# Bundle prod app source
+FROM base as prod
+RUN npm install
+COPY . .
 CMD [ "npm", "run", "start" ]
