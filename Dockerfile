@@ -15,7 +15,7 @@ FROM base as test
 WORKDIR /usr/src/app
 RUN npm install
 COPY . .
-CMD ["npm", "run", "test"]
+CMD ["npm", "run", "test:junit"]
 
 # Bundle prod app source
 FROM base as prod
