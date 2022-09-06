@@ -22,5 +22,5 @@ jobs:
       - deploy:
           name: Push application Docker image
           command: |
-            echo "$DOCKER_PASS" | docker login --username $DOCKER_USER --password-stdin
+            echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin
             docker push matheves/node_sample:latest
