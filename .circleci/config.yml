@@ -14,11 +14,12 @@ jobs:
       - run:
           name: Run test container
           command: |
-            docker run -it --rm --name cont_test node_sample_test
+            docker run -it --name cont_test node_sample_test
       - run:
           name: Recover test files
           command: |
             docker cp cont_test:/usr/src/app/$JEST_JUNIT_OUTPUT_DIR $JEST_JUNIT_OUTPUT_DIR
+            docker rm node_sample_test
       - store_test_results:
           path: $JEST_JUNIT_OUTPUT_DIR
       - run:
