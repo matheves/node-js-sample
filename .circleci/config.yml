@@ -1,7 +1,7 @@
 jobs:
   test:
     docker:
-      - image: cimg/node:12.16
+      - image: cimg/node:latest
     steps:
       - checkout
       - run: echo "Running tests"
