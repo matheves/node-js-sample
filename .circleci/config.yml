@@ -30,13 +30,22 @@ jobs:
           command: |
             docker build --cache-from=app -t jacky .
       - run:
-          name: Run docker imae on port 8080
+          name: Run docker image on port 8080
           command : |
             docker run -d -p 8080:8080 jacky
       - run:
-          name: Curl route 8080
+          name: Install curl
+          command : |
+            apt update
+            apt -yq install curl
+      - run:
+          name: Curl route 8081
           command: |
-              curl http://localhost:8080
+            curl http://localhost:8081
+      - run:
+          name: Curl validation
+          command: |
+            echo 'Ca marche narvalo !'
       # - run:
       #     name: Save Docker image layer cache
       #     command: |
