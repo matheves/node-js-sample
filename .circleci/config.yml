@@ -7,21 +7,43 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
+      - restore_cache:
+          keys:
+            - v1-{{ .Branch }}
+          paths:
+            - /caches/app.tar
+      - run:
+          name: Load Docker image layer cache
+          command: |
+            set +o pipefail
+            docker load -i /caches/app.tar | true
       - run:
           name: Build test container
+          #docker build -t node_sample_test --target test --build-arg JEST_JUNIT_OUTPUT_DIR=$JEST_JUNIT_OUTPUT_DIR . 
           command: |
-            docker build -t node_sample_test --target test --build-arg JEST_JUNIT_OUTPUT_DIR=$JEST_JUNIT_OUTPUT_DIR .
+            docker build -t node_sample_test --target test --build-arg JEST_JUNIT_OUTPUT_DIR=/reports/ .
+      - run:
+          name: Save Docker image layer cache
+          command: |
+            mkdir -p /caches
+            docker save -o /caches/app.tar app
+      - save_cache:
+          key: v1-{{ .Branch }}-{{ epoch }}
+          paths:
+            - /caches/app.tar
       - run:
           name: Run test container
           command: |
             docker run -it --name cont_test node_sample_test
       - run:
           name: Recover test files
+          #docker cp cont_test:/usr/src/app/$JEST_JUNIT_OUTPUT_DIR $JEST_JUNIT_OUTPUT_DIR
           command: |
-            docker cp cont_test:/usr/src/app/$JEST_JUNIT_OUTPUT_DIR $JEST_JUNIT_OUTPUT_DIR
+            docker cp cont_test:/usr/src/app/reports .
             docker rm node_sample_test
       - store_test_results:
-          path: $JEST_JUNIT_OUTPUT_DIR
+          #path: $JEST_JUNIT_OUTPUT_DIR
+          path: ./reports/
       - run:
           name: Build prod application Docker image
           command: |
