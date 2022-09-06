@@ -1,8 +1,8 @@
-version: 2
+version: 2.1
   jobs:
     test:
       docker:
-        - image: circleci/node:12.16
+        - image: cimg/node:12.16
       steps:
         - checkout
         - run: echo "Running tests"
@@ -74,7 +74,7 @@ version: 2
               docker push matheves/node_sample:latest
 
 workflows:
-  version: 2
+  version: 2.1
     test_build:
       jobs:
         - test
