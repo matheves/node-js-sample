@@ -12,12 +12,14 @@ ARG JEST_JUNIT_OUTPUT_DIR=./reports/
 
 # Bundle test app source
 FROM base as test
+WORKDIR /usr/src/app
 RUN npm install
 COPY . .
 CMD ["npm", "run", "test"]
 
 # Bundle prod app source
 FROM base as prod
+WORKDIR /usr/src/app
 RUN npm install
 COPY . .
 CMD [ "npm", "run", "start" ]
