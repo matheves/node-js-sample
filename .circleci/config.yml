@@ -32,16 +32,11 @@ jobs:
       - run:
           name: Run docker image on port 8080
           command : |
-            docker run -d -p 8080:8080 jacky
+            docker run -d -p 8080:8080 --name jacky_cont jacky 
       - run:
-          name: Install curl
-          command : |
-            apk update
-            apk add curl curl-dev bash
-      - run:
-          name: Curl route 8081
+          name: Curl route 8080
           command: |
-            curl http://localhost:8080
+            docker run --network container:jacky_cont appropriate/curl --retry 10 --retry-connrefused http://jacky_cont:8080
       - run:
           name: Curl validation
           command: |
