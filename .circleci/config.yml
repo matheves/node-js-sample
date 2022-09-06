@@ -73,7 +73,7 @@ jobs:
             docker push matheves/node_sample:latest
 
 workflows:
-  version: 2.1
+  version: 2
   test_build:
     jobs:
       - test
